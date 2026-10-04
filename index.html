@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematik Deposu | Yahya Yılmaz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #f8fafc; color: #1e293b; }
+        header { background: #1e3a8a; color: white; padding: 2rem; text-align: center; }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        header p { color: #93c5fd; font-size: 1.1rem; }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .intro-box { background: white; padding: 1.5rem; border-radius: 12px; border-left: 5px solid #3b82f6; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .card h3 { color: #1e3a8a; margin-bottom: 0.5rem; }
+        .badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
+        canvas { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 8px; width: 100%; height: auto; touch-action: none; margin-top: 1rem; }
+        .controls { margin-top: 1rem; text-align: center; }
+        input[type=range] { width: 80%; accent-color: #2563eb; }
+        .info-badge { display: inline-block; margin-top: 0.5rem; padding: 0.4rem 1rem; border-radius: 8px; font-weight: bold; color: white; background: #2563eb; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📐 Matematik Deposu</h1>
+    <p>Açık Eğitim Kaynakları & Etkileşimli Öğretim Modülleri</p>
+</header>
+
+<div class="container">
+    <div class="intro-box">
+        <h2>👨‍🏫 Proje Hakkında</h2>
+        <p>Bu platform, matematik öğretmenlerinin ve öğrencilerin akıllı tahta veya kişisel cihazlarda kodlama ihtiyacı duymadan kullanabilecekleri dinamik, oyunlaştırılmış ve müfredat uyumlu öğretim materyalleri sunmak amacıyla kurgulanmıştır.</p>
+    </div>
+
+    <div class="grid">
+        <!-- Modül 1: Dinamik Açı Lab -->
+        <div class="card" style="grid-column: span 2;">
+            <span class="badge">5. Sınıf Geometri</span>
+            <h3>Dinamik Açı ve Türleri Laboratuvarı</h3>
+            <p>Açı kolunu sürükleyerek veya aşağıdaki kaydırıcıyı kullanarak açının derecesine göre türünü ve özelliklerini keşfedin.</p>
+            
+            <canvas id="angleCanvas" width="400" height="220"></canvas>
+
+            <div class="controls">
+                <input type="range" id="angleSlider" min="0" max="180" value="45">
+                <div style="margin-top: 0.5rem; font-size: 1.2rem; font-weight: bold;">
+                    Açı: <span id="angleText">45°</span>
+                </div>
+                <div id="typeBadge" class="info-badge">DAR AÇI</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('angleCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('angleSlider');
+    const angleText = document.getElementById('angleText');
+    const typeBadge = document.getElementById('typeBadge');
+
+    const centerX = 200, centerY = 180, lineLength = 110;
+
+    function drawAngle(angle) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Sabit Kol
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + lineLength, centerY);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Hareketli Kol
+        const rad = (180 - angle) * Math.PI / 180;
+        const endX = centerX + lineLength * Math.cos(rad);
+        const endY = centerY - lineLength * Math.sin(rad);
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Yay / Diklik Sembolü
+        ctx.beginPath();
+        if (angle === 90) {
+            ctx.rect(centerX, centerY - 15, 15, 15);
+            ctx.fillStyle = '#16a34a';
+            ctx.fill();
+        } else {
+            ctx.arc(centerX, centerY, 30, 0, -angle * Math.PI / 180, true);
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // Merkez Nokta
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#1e293b';
+        ctx.fill();
+
+        // Güncelleme
+        angleText.textContent = angle + '°';
+        if (angle > 0 && angle < 90) { typeBadge.textContent = 'DAR AÇI'; typeBadge.style.background = '#d97706'; }
+        else if (angle === 90) { typeBadge.textContent = 'DİK AÇI'; typeBadge.style.background = '#16a34a'; }
+        else if (angle > 90 && angle < 180) { typeBadge.textContent = 'GENİŞ AÇI'; typeBadge.style.background = '#2563eb'; }
+        else if (angle === 180) { typeBadge.textContent = 'DOĞRU AÇI'; typeBadge.style.background = '#9333ea'; }
+        else if (angle === 0) { typeBadge.textContent = 'SIFIR AÇI'; typeBadge.style.background = '#64748b'; }
+    }
+
+    slider.addEventListener('input', (e) => drawAngle(parseInt(e.target.value)));
+    drawAngle(45);
+</script>
+
+</body>
+</html>
